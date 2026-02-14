@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sertifikat IQ - Lidan Psikologi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;600;800&display=swap');
+
+        body { background-color: #f3f4f6; margin: 0; padding: 0; }
+
+        /* Ukuran A4 Landscape */
+        .cert-container {
+            width: 297mm;
+            height: 210mm;
+            padding: 12mm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.15);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* Border Ornamen */
+        .cert-border {
+            border: 8px double #1e1b4b;
+            height: 100%;
+            width: 100%;
+            padding: 8mm 14mm;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fffcf5;
+            box-sizing: border-box;
+        }
+
+        /* Garis emas tipis di dalam border biru */
+        .cert-border::before {
+            content: "";
+            position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 2px solid #c5a059;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-montserrat { font-family: 'Montserrat', sans-serif; }
+
+        /* Divider ornament */
+        .ornament-divider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        .ornament-divider .line {
+            height: 1px;
+            width: 60px;
+            background: linear-gradient(to right, transparent, #c5a059);
+        }
+        .ornament-divider .line.right {
+            background: linear-gradient(to left, transparent, #c5a059);
+        }
+        .ornament-divider .diamond {
+            width: 6px;
+            height: 6px;
+            background: #c5a059;
+            transform: rotate(45deg);
+        }
+
+        /* Footer kolom tengah – QR sebagai TTD */
+        .ttd-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        #qrcode img, #qrcode canvas {
+            display: block;
+        }
+
+        /* Garis TTD */
+        .ttd-line {
+            width: 140px;
+            border-bottom: 1.5px solid #1e1b4b;
+            margin-top: 2px;
+        }
+
+        @media print {
+            body { background: none; margin: 0; }
+            .cert-container { margin: 0; box-shadow: none; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print fixed top-5 right-5 z-50 flex gap-2">
+        <button onclick="window.print()" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-black transition-all">Cetak Langsung</button>
+        <button onclick="downloadPDF()" class="bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-800 flex items-center gap-2 transition-all">
+            <span>Simpan PDF</span>
+        </button>
+    </div>
+
+    <div id="certificate" class="cert-container">
+        <div class="cert-border">
+
+            <!-- ═══════════════ HEADER ═══════════════ -->
+            <div class="flex items-center justify-between w-full relative z-10">
+                <!-- Logo Kiri -->
+                <img src="https://lidan.co.id/gambar/logo-baru.png" alt="Logo Lidan" class="h-16 object-contain">
+
+                <!-- Teks Tengah -->
+                <div class="flex flex-col items-center text-center">
+                    <h4 class="font-montserrat font-extrabold text-indigo-950 tracking-[0.4em] text-sm uppercase">Lidan Psikologi Indonesia</h4>
+                    <div class="ornament-divider mt-1">
+                        <span class="line"></span>
+                        <span class="diamond"></span>
+                        <span class="diamond" style="opacity:0.5; transform:rotate(45deg) scale(0.6);"></span>
+                        <span class="diamond"></span>
+                        <span class="line right"></span>
+                    </div>
+                    <p class="text-[9px] font-montserrat font-semibold text-amber-600 tracking-[0.3em] uppercase mt-1">Lembaga Psikologi Profesional Terakreditasi</p>
+                </div>
+
+                <!-- Logo Kanan -->
+                <img src="https://lidan.co.id/gambar/logo-baru.png" alt="Logo Lidan" class="h-16 object-contain">
+            </div>
+
+            <!-- ═══════════════ BODY ═══════════════ -->
+            <div class="flex flex-col items-center relative z-10">
+                <h1 class="font-cinzel text-5xl font-black text-indigo-900 mb-1">SERTIFIKAT IQ</h1>
+                <p class="text-xs font-montserrat font-bold tracking-[0.6em] text-amber-600 mb-4" id="nomor-sertifikat">NOMOR: 000/00/IQ/2026</p>
+
+                <p class="font-montserrat text-sm text-gray-400 font-light tracking-widest uppercase mb-1">Diberikan Kepada</p>
+                <h2 class="font-cinzel text-4xl font-black text-indigo-950 uppercase tracking-wide pb-1" id="nama-peserta">Nama Peserta Lengkap</h2>
+                <div class="w-72 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent mb-4"></div>
+
+                <p class="font-montserrat text-gray-600 text-sm max-w-2xl text-center leading-relaxed">
+                    Berdasarkan hasil pemeriksaan psikologis yang komprehensif, dengan ini menyatakan bahwa yang bersangkutan memiliki tingkat kecerdasan intelektual sebagai berikut:
+                </p>
+            </div>
+
+            <!-- ═══════════════ FOOTER TIGA KOLOM ═══════════════ -->
+            <div class="flex justify-between items-end w-full px-2 pb-1 relative z-10">
+
+                <!-- KOLOM KIRI: IQ Score + Klasifikasi -->
+                <div class="flex flex-col items-center gap-2" style="width: 30%;">
+                    <div class="bg-white border border-indigo-100 rounded-xl shadow-sm px-6 py-3 text-center w-full">
+                        <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-0.5">IQ Score (Skala Wechsler)</p>
+                        <p class="font-cinzel text-5xl font-black text-indigo-900 leading-tight" id="skor-iq">---</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl shadow-sm px-6 py-2 text-center w-full">
+                        <p class="text-[8px] font-black text-amber-500 uppercase tracking-widest mb-0.5">Klasifikasi Inteligensi</p>
+                        <p class="font-montserrat text-xl font-extrabold text-amber-600 uppercase" id="kategori-iq">MEMUAT...</p>
+                    </div>
+                </div>
+
+                <!-- KOLOM TENGAH: QR Code sebagai TTD -->
+                <div class="ttd-column" style="width: 36%;">
+                    <p class="text-[8px] font-bold text-gray-400 font-montserrat tracking-wider uppercase mb-1" id="tgl-lokasi">Medan, ...</p>
+                    <div id="qrcode" class="border-2 border-indigo-100 rounded-lg shadow-sm p-1 bg-white"></div>
+                    <div class="ttd-line"></div>
+                    <p class="font-montserrat font-extrabold text-indigo-950 text-sm mt-1">Dr. Karina M. Brahmana, M.Psi., Psikolog</p>
+                    <p class="text-[8px] font-bold text-amber-600 uppercase tracking-[0.2em]">Head of Psychology</p>
+                </div>
+
+                <!-- KOLOM KANAN: Deskripsi + Badge -->
+                <div class="flex flex-col items-center justify-end gap-3" style="width: 30%;">
+                    <p class="text-[10px] text-gray-400 font-semibold italic text-center leading-relaxed" id="deskripsi-singkat">
+                        "Hasil ini merupakan gambaran kondisi psikologis saat pemeriksaan dilakukan."
+                    </p>
+                    <div class="flex items-center gap-2 bg-indigo-950 text-white rounded-full px-4 py-1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span class="text-[9px] font-bold tracking-widest uppercase font-montserrat">Terverifikasi</span>
+                    </div>
+                    <p class="text-[7px] text-gray-400 font-montserrat text-center tracking-wide">Scan QR untuk validasi keaslian sertifikat</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://lidan-co-id.pages.dev/api/contacts_filter_dinamis6";
+        const TABLE_NAME = "iq_certificates";
+        const AUTH_KEY = "admin";
+
+        async function fetchSertifikat() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch(`${API_URL}?table=${TABLE_NAME}&filterField=x_09&filterValue=${token}`, {
+                    headers: { 'X-Custom-Auth': AUTH_KEY }
+                });
+                const result = await res.json();
+                
+                if (result.data && result.data.length > 0) {
+                    renderSertifikat(result.data[0]);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderSertifikat(data) {
+            document.getElementById('nama-peserta').innerText = data.x_01;
+            document.getElementById('nomor-sertifikat').innerText = `NOMOR: ${data.x_10 || '-'}`;
+            document.getElementById('skor-iq').innerText = data.x_05;
+            document.getElementById('kategori-iq').innerText = data.x_06;
+            
+            if(data.x_08) {
+                document.getElementById('deskripsi-singkat').innerText = `"${data.x_08}"`;
+            }
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const tgl = new Date(data.x_07).toLocaleDateString('id-ID', options);
+            document.getElementById('tgl-lokasi').innerText = `Dikeluarkan di Medan, ${tgl}`;
+
+            new QRCode(document.getElementById("qrcode"), {
+                text: `https://sign.lidan.co.id/iq.html?token=${data.x_09}`,
+                width: 80,
+                height: 80,
+                colorDark : "#1e1b4b",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('certificate');
+            const nama = document.getElementById('nama-peserta').innerText;
+            const opt = {
+                margin: 0,
+                filename: `Sertifikat_IQ_${nama}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        fetchSertifikat();
+    </script>
+</body>
+</html>

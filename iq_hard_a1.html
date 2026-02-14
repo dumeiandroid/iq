@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sertifikat IQ - Lidan Psikologi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;600;800&display=swap');
+
+        body { background-color: #f3f4f6; margin: 0; padding: 0; }
+        
+        .cert-container {
+            width: 297mm;
+            height: 210mm;
+            padding: 10mm;
+            margin: 10px auto;
+            background: white;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .cert-border {
+            border: 6px double #1e1b4b;
+            height: 100%;
+            width: 100%;
+            padding: 8mm 12mm;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fffcf5;
+            box-sizing: border-box;
+        }
+
+        .cert-border::before {
+            content: "";
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 1.5px solid #c5a059;
+            pointer-events: none;
+        }
+
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-montserrat { font-family: 'Montserrat', sans-serif; }
+
+        @media print {
+            body { background: none; margin: 0; }
+            .cert-container { margin: 0; box-shadow: none; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print fixed top-5 right-5 z-50 flex gap-2">
+        <button onclick="window.print()" class="bg-gray-800 text-white px-5 py-2 rounded-lg font-bold shadow-md hover:bg-black text-sm">Cetak</button>
+        <button onclick="downloadPDF()" class="bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold shadow-md hover:bg-indigo-800 text-sm">Simpan PDF</button>
+    </div>
+
+    <div id="certificate" class="cert-container">
+        <div class="cert-border text-center">
+            
+            <div class="flex justify-between items-center w-full px-4">
+                <img src="https://lidan.co.id/gambar/logo-baru.png" class="h-14 object-contain">
+                <div class="flex flex-col">
+                    <h4 class="font-montserrat font-extrabold text-indigo-950 tracking-[0.3em] text-[12px] uppercase">Lidan Psikologi Indonesia</h4>
+                    <p class="text-[8px] font-bold text-amber-600 uppercase tracking-widest">Lembaga Psikologi Terapan</p>
+                </div>
+                <img src="https://lidan.co.id/gambar/logo-baru.png" class="h-14 object-contain">
+            </div>
+
+            <div class="flex flex-col items-center -mt-2">
+                <p class="text-[10px] font-montserrat font-light text-gray-500 mb-1 italic">Sertifikat Hasil Pemeriksaan Psikologis</p>
+                <h1 class="font-cinzel text-5xl font-black text-indigo-900 mb-1">SERTIFIKAT IQ</h1>
+                <p class="text-[11px] font-montserrat font-bold tracking-[0.4em] text-amber-700 mb-6" id="nomor-sertifikat">NOMOR: 000/00/IQ/2026</p>
+
+                <p class="font-montserrat text-md text-gray-500">Diberikan Kepada :</p>
+                <h2 class="font-cinzel text-4xl font-black text-indigo-950 my-4 border-b border-indigo-100 px-12 pb-1 inline-block uppercase tracking-wide" id="nama-peserta">Nama Peserta</h2>
+                
+                <p class="font-montserrat text-gray-700 leading-snug max-w-3xl text-[14px] px-10">
+                    Berdasarkan hasil pemeriksaan psikologis yang komprehensif, dengan ini menyatakan bahwa yang bersangkutan memiliki tingkat kecerdasan intelektual sebagai berikut:
+                </p>
+
+                <div class="flex gap-10 mt-6 items-center justify-center bg-white/40 px-8 py-4 rounded-xl border border-amber-100 shadow-sm">
+                    <div class="text-center">
+                        <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">IQ Score</p>
+                        <p class="font-cinzel text-4xl font-black text-indigo-900" id="skor-iq">---</p>
+                    </div>
+                    <div class="h-10 w-[1px] bg-amber-200"></div>
+                    <div class="text-center">
+                        <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">Klasifikasi</p>
+                        <p class="font-montserrat text-xl font-extrabold text-amber-600 uppercase" id="kategori-iq">MEMUAT...</p>
+                    </div>
+                </div>
+                
+                <p class="text-[10px] text-gray-400 mt-4 font-semibold italic max-w-xl" id="deskripsi-singkat">
+                    "Hasil ini merupakan gambaran kondisi psikologis saat pemeriksaan dilakukan."
+                </p>
+            </div>
+
+            <div class="w-full flex justify-between items-end px-6 pb-2">
+                <div class="flex flex-col items-center">
+                    <div id="qrcode" class="border-[3px] border-white shadow-sm p-1 bg-white"></div>
+                    <p class="text-[7px] font-bold text-gray-400 font-montserrat mt-1 uppercase tracking-tighter">Scan to Verify</p>
+                </div>
+                
+                <div class="text-center">
+                    <p class="text-[10px] font-bold text-gray-700 mb-10" id="tgl-lokasi">Medan, ...</p>
+                    <div class="w-48 border-b border-indigo-950 mx-auto"></div>
+                    <p class="font-montserrat font-extrabold text-indigo-950 text-[12px] mt-1">Hendra Lidan, M.Psi., Psikolog</p>
+                    <p class="text-[8px] font-bold text-amber-600 uppercase tracking-widest">Direktur Lidan Psikologi</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://lidan-co-id.pages.dev/api/contacts_filter_dinamis6";
+        const TABLE_NAME = "iq_certificates";
+        const AUTH_KEY = "admin";
+
+        async function fetchSertifikat() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch(`${API_URL}?table=${TABLE_NAME}&filterField=x_09&filterValue=${token}`, {
+                    headers: { 'X-Custom-Auth': AUTH_KEY }
+                });
+                const result = await res.json();
+                if (result.data && result.data.length > 0) renderSertifikat(result.data[0]);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderSertifikat(data) {
+            document.getElementById('nama-peserta').innerText = data.x_01;
+            document.getElementById('nomor-sertifikat').innerText = `NOMOR: ${data.x_10 || '-'}`;
+            document.getElementById('skor-iq').innerText = data.x_05;
+            document.getElementById('kategori-iq').innerText = data.x_06;
+            if(data.x_08) document.getElementById('deskripsi-singkat').innerText = `"${data.x_08}"`;
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const tgl = new Date(data.x_07).toLocaleDateString('id-ID', options);
+            document.getElementById('tgl-lokasi').innerText = `Dikeluarkan di Medan, ${tgl}`;
+
+            new QRCode(document.getElementById("qrcode"), {
+                text: `https://sign.lidan.co.id/iq.html?token=${data.x_09}`,
+                width: 70, // Dikecilkan sedikit agar lebih aman
+                height: 70,
+                colorDark : "#1e1b4b",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('certificate');
+            const nama = document.getElementById('nama-peserta').innerText;
+            const opt = {
+                margin: 0,
+                filename: `Sertifikat_IQ_${nama}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+        fetchSertifikat();
+    </script>
+</body>
+</html>
